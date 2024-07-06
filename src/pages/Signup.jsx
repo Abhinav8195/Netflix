@@ -1,23 +1,72 @@
 import React, { useState } from 'react'
-import { Link ,useNavigate} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { UserAuth } from '../context/AuthContext'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Signup = () => {
   const navigate = useNavigate();
-  const[email,setemail]=useState('')
-  const[password,setpassword]=useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const {user,signUp} =UserAuth( )
+  const { user, signUp } = UserAuth();
 
-  const handlesubmit= async(e)=>{
-   e.preventDefault()
-   try{
-    await signUp(email,password);
-    navigate('/')
-   }catch(error){
-    console.log(error)
-   }
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    try {
+      await signUp(email, password);
+      toast.success("Sign Up Successful", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+      toast.error("Sign Up Failed", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
   return (
     <>
       <div className="w-full h-screen">
@@ -32,18 +81,18 @@ const Signup = () => {
             <div className="max-w-[320px] mx-auto py-16">
               <h1 className="text-3xl font-bold">Sign Up</h1>
               <form
-                onSubmit={handlesubmit}
+                onSubmit={handleSubmit}
                 className="w-full flex flex-col py-4"
               >
                 <input
-                  onChange={(e) => setemail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="p-3 my-2 bg-gray-700 rounded"
                   type="email"
                   placeholder="Email"
                   autoComplete="email"
                 />
                 <input
-                  onChange={(e) => setpassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="p-3 my-2 bg-gray-700 rounded"
                   type="password"
                   placeholder="Password"
@@ -61,7 +110,7 @@ const Signup = () => {
                 </div>
                 <p className="py-8">
                   <span className="text-gray-600">
-                    Already suscribed to Netflix ?{" "}
+                    Already subscribed to Netflix?{" "}
                   </span>{" "}
                   <Link to={"/login"}> Sign In</Link>{" "}
                 </p>
@@ -70,6 +119,7 @@ const Signup = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 }
